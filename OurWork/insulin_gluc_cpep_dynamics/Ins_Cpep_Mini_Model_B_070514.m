@@ -1,4 +1,4 @@
-function Ins_Cpep_Mini_Model_B_062414
+function Ins_Cpep_Mini_Model_B_070514
 
 %Fixed Ins_Mini_Model initial conditions & model parameters
 h = 4.6;
@@ -80,6 +80,7 @@ title('CPEPTIDE MINMAL MODEL')
 figure          % plot insulin secretion rate-time profile
 isr = m2 * z(:,1);
 h3 = plot(tspan,isr,'-g', 'Linewidth',2);
+legend(h3,'simulated insulin secretion rate-time profile')
 xlabel('time'); ylabel('insulin secretion rate');
 title('INSULIN SECRETION RATE TIME PROFILE')
 
