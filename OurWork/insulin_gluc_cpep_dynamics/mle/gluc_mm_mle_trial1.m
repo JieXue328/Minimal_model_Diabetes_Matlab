@@ -45,17 +45,6 @@ p = [Sg, Gb, k3, Si, Ib];
 %time sample from linear interpolation of its measured samples
 tspan = tgi(:,1);
 
-figure; plot(tspan, tgi(:,2), 'o'); hold on
-plot( [tspan(1) tspan(end)], [Ib Ib], '--k','Linewidth',1.5)
-%baseline level
-xlabel('t [min]'); ylabel('[\muU/mL]')
-title('measured input signal (insulin conc. time course)')
-tspan = [0:1:200]; %to verify interpolation of input signal
-h = plot(tspan, interp1(tgi(:,1),tgi(:,3), tspan), '.r');
-legend(h,'interpolated (resampled) signal')
-%Simulation time vector:
-tspan = tgi(:,1);;%tspan = union(t_insu, t_gluc);
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 disp(' Enter to continue with MLE'); disp(' ')
 pause
@@ -78,7 +67,7 @@ options = optimset('Display','iter','TolFun', 1e-4,...%'iter' default:1e-4
 plt = 0;
 %for i=1
 %LSQNONLIN: objective function should return the model error
-[p_est,resnorm,RESIDUAL,exitflag,OUTPUT,LAMBDA,Jacobian]= lsqnonlin(@obj_fn,p_init,lb,ub,options,p_fix,tspan,tgi, plt); 
+[p_est,resnorm,RESIDUAL,exitflag,OUTPUT,LAMBDA,Jacobian]= lsqnonlin(@err_fn,p_init,lb,ub,options,p_fix,tspan,tgi, plt); 
 disp(' ')
 %end
 %Accuracy:
@@ -101,23 +90,19 @@ disp([' X0 = ', num2str(p_fix(3))]); disp(' ')
 plt = 1;
 gluc = gluc_sim(tspan,x0,tgi, p,plt);
 %compare model output with measured data
-figure(2); subplot(221)
+figure(1); subplot(221)
 h1 = plot(tspan,gluc_exp,'or', 'Linewidth',2);
 %legend(h1, 'experimental test data')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function e = obj_fn(p_var, p_fix,tspan,tgi,plt)
+function e = err_fn(p_var, p_fix,tspan,tgi,plt)
 p = [p_var(1), p_fix(1), p_var(2), p_var(3), p_fix(2)];
 %x0 = [G0, X0]
 x0 = [p_var(4), p_fix(3)];
 gluc = gluc_sim(tspan,x0,tgi, p, 0);
 %LSQNONLIN: objective function should return the model error
 e = gluc-tgi(:,2);
-if plt==1 %fast update during estimation process
-N=length(tspan);
-figure(2)
-plot(1:N,gluc,'b',1:N,data,'r'); drawnow
-end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function gluc = gluc_sim(tspan,x0,tgi, p,plt)
 %SIM_INPUT_SIM Simulation of glucose minimal model.
