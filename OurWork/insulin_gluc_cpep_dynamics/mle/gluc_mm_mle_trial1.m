@@ -111,7 +111,7 @@ function gluc = gluc_sim(tspan,x0,tgi, p,plt)
 %gluc: model output, glucose conc. in plasma [mg/dL]
 
 ode_options = [];
-[t,x] = ode45(@gluc_ode,tspan,x0,ode_options, tgi, p);
+[~,x] = ode45(@gluc_ode,tspan,x0,ode_options, tgi, p);
 %[t,x] = ode15s(@gluc_ode,tspan,x0,ode_options, tu, p,sigma_nu);
 
 %Output
