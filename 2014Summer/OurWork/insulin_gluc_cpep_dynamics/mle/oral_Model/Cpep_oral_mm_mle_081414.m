@@ -1,4 +1,4 @@
-function Cpep_oral_mm_mle_fixed_081414
+function Cpep_oral_mm_mle_081414
 
 tgc = [0	5.39	0.62
 10	5.93	0.84
@@ -48,9 +48,9 @@ p = [alpha, beta, h, K, k01, k21, k12];
 disp(' Enter to continue with MLE'); disp(' ')
 pause
 if 1
-p_init = [alpha, beta, h, K];
+p_init = [alpha, beta, h, K, k01,k21, k12, V];
 %3 known parameters:
-p_fix = [k01,k21, k12, V, x0(1),x0(2),x0(3)];
+p_fix = [x0(1),x0(2),x0(3)];
 end
 
 lb = 0*ones(size(p_init));%[0 0 0 0];
@@ -68,11 +68,11 @@ disp(' ')
 varp = resnorm*inv(Jacobian'*Jacobian)/length(tspan);
 stdp = sqrt(diag(varp)); %The standard deviation is the square root of the variance
 
-% p_est = [alpha, beta, h, K];
-% p_fix = [k01,k21, k12, V, x0(1),x0(2),x0(3)];
-p = [p_est(1), p_est(2), p_est(3), p_est(4), p_fix(1), p_fix(2),p_fix(3),p_fix(4)];
+% p_est = [alpha, beta, h, K, k01,k21, k12, V];
+% p_fix = [x0(1),x0(2),x0(3)];
+p = [p_est(1), p_est(2), p_est(3), p_est(4), p_est(5), p_est(6),p_est(7),p_est(8)];
 %x0 = [x0]
-x0 = [p_fix(5), p_fix(6), p_fix(7)];
+x0 = [p_fix(1), p_fix(2), p_fix(3)];
 
 plt =1;
 cpep = cpep_sim(tspan,x0,tgc, p,plt);
@@ -84,22 +84,22 @@ disp([' alpha = ', num2str(p_est(1)), ' +/- ', num2str(stdp(1))])
 disp([' beta = ', num2str(p_est(2)), ' +/- ', num2str(stdp(2))])
 disp([' h = ', num2str(p_est(3)), ' +/- ', num2str(stdp(3))])
 disp([' K = ', num2str(p_est(4)), ' +/- ', num2str(stdp(4))])
-disp([' k01 = ', num2str(p_fix(1))])
-disp([' k21 = ', num2str(p_fix(2))])
-disp([' k12 = ', num2str(p_fix(3))])
-disp([' V = ', num2str(p_fix(4))])
+disp([' k01 = ', num2str(p_est(5)), ' +/- ', num2str(stdp(5))])
+disp([' k21 = ', num2str(p_est(6)), ' +/- ', num2str(stdp(6))])
+disp([' k12 = ', num2str(p_est(7)), ' +/- ', num2str(stdp(7))])
+disp([' V = ', num2str(p_est(8)), ' +/- ', num2str(stdp(8))])
 disp(' ')
 disp(' Initial conditions:')
-disp([' Y(0) = ',  num2str(p_fix(5))])
-disp([' CP1(0) = ', num2str(p_fix(6))])
-disp([' CP2(0) = ', num2str(p_fix(7))])
+disp([' Y(0) = ',  num2str(p_fix(1))])
+disp([' CP1(0) = ', num2str(p_fix(2))])
+disp([' CP2(0) = ', num2str(p_fix(3))])
 disp(' ')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function e = err_fn(p_var, p_fix,tspan,tgc)
-p = [p_var(1), p_var(2), p_var(3),p_var(4), p_fix(1),p_fix(2),p_fix(3),p_fix(4)];
+p = [p_var(1), p_var(2), p_var(3),p_var(4), p_var(5),p_var(6),p_var(7),p_var(8)];
 
-x0 = [ p_fix(5), p_fix(6), p_fix(7)];
+x0 = [ p_fix(1), p_fix(2), p_fix(3)];
 cpep = cpep_sim(tspan,x0,tgc, p,0);
 %LSQNONLIN: objective function should return the model error
 e = cpep-tgc(:,3);
@@ -163,12 +163,12 @@ figure
 subplot(121); h = plot(tspan,x(:,2), '-','Linewidth',2); hold on
 plot( [tspan(1) tspan(end)], [CP1b CP1b], '--k','Linewidth',1.5)
 %baseline level
-ylabel('Cpep level [uU/mL]')
+ylabel('Cpep level [nmol/L]')
 legend(h, 'model simulation')
 
 g = interp1(tgc(:,1),tgc(:,2), tspan); %reconstruct used input signal
 subplot(122); plot(tspan,g, '--or','Linewidth',2); hold on
 plot( [tspan(1) tspan(end)], [Gb Gb], '--k','Linewidth',1.5)
 %baseline level
-ylabel('glucose level [mg/dL]'); xlabel('time [min]')
+ylabel('glucose level [mmol/L]'); xlabel('time [min]')
 legend('interpolated measured test data')

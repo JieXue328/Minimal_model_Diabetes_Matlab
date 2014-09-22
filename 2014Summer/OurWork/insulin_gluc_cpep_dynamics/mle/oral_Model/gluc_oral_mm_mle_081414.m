@@ -37,7 +37,7 @@ p2 = 0.025;
 p3 = 5.0e-4;
 V = 1.5;
 
-alpha = [1 1.5 2 3 4 5 6];
+alpha = rand(1,7);
 alpha= [0 alpha];
 p = [p1 p2 p3 V alpha];
 
@@ -84,7 +84,6 @@ disp([' alpha4 = ', num2str(p_est(8)), ' +/- ', num2str(stdp(8))])
 disp([' alpha5 = ', num2str(p_est(9)), ' +/- ', num2str(stdp(9))])
 disp([' alpha6 = ', num2str(p_est(10)), ' +/- ', num2str(stdp(10))])
 disp([' alpha7 = ', num2str(p_est(11)), ' +/- ', num2str(stdp(11))])
-
 disp(' ')
 disp(' Initial conditions:')
 disp([' G0 = ', num2str(p_fix(4))])
@@ -136,7 +135,7 @@ alpha = p(7:end);
 
 u = interp1(tgi(:,1),tgi(:,3), t);
 
-t_ra = [0,10,30,60,90,120, 180,300]';
+t_ra = [0,10,30,60,90,120,180,300]';
 
 %ode's
 for i = 1:7
